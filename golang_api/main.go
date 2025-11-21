@@ -68,12 +68,6 @@ func initDB() *sql.DB {
         CREATE INDEX IF NOT EXISTS idx_usage_records_supply_id ON usage_records(supply_id);
         CREATE INDEX IF NOT EXISTS idx_usage_records_used_at ON usage_records(used_at);
         CREATE INDEX IF NOT EXISTS idx_supply_requests_status ON supply_requests(status);
-
-        INSERT OR IGNORE INTO supply_items (name, type, model, quantity, min_quantity, unit, location) VALUES
-        ('Картридж HP 85A', 'Картридж', 'HP LaserJet 85A', 10, 3, 'шт', 'Склад А'),
-        ('Бумага А4', 'Бумага', 'SvetoCopy', 50, 10, 'пачка', 'Склад Б'),
-        ('Тонер Canon 045', 'Тонер', 'Canon 045', 8, 2, 'шт', 'Склад А'),
-        ('Картридж Epson 002', 'Картридж', 'Epson 002', 5, 2, 'шт', 'Склад В');
     `
 
 	_, err = db.Exec(initSQL)
