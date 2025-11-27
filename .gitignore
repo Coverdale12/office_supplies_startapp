@@ -1,6 +1,8 @@
 office_supplies.exe
 office_supplies.db
-
+release
+dist
+dist-electron
 
 # Logs
 logs

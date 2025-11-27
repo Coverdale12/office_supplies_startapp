@@ -17,7 +17,7 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import { Delete, Add, Warning } from '@mui/icons-material';
+import { Delete, Add, Warning, BorderColor, Close } from '@mui/icons-material';
 import { useSupplies, useDeleteSupply } from '../hooks/useSupplies';
 import SupplyForm from './SupplyForm';
 import { SupplyItem } from '../types/types';
@@ -26,12 +26,17 @@ const SupplyList: React.FC = () => {
   const { data: supplies, isLoading, error } = useSupplies();
   const deleteMutation = useDeleteSupply();
   const [openForm, setOpenForm] = useState(false);
+  const [changedSupply, setChangedSupply] = useState<SupplyItem | null>(null);
 
   const handleDelete = (id: number) => {
     if (window.confirm('Вы уверены, что хотите удалить этот материал?')) {
       deleteMutation.mutate(id);
     }
   };
+
+  const handleChange = (supply: SupplyItem) => {
+    setChangedSupply(supply)
+  }
 
   const getStockStatus = (supply: SupplyItem) => {
     if (supply.quantity === 0) return { label: 'Нет в наличии', color: 'error' as const };
@@ -40,7 +45,7 @@ const SupplyList: React.FC = () => {
   };
 
   if (isLoading) return <Typography>Загрузка...</Typography>;
-  if (error) return <Typography color="error">Ошибка при загрузке материалов</Typography>;
+  if (error) return <Typography color="error">Ошибка при получении данных!</Typography>;
 
   return (
     <Box>
@@ -112,10 +117,18 @@ const SupplyList: React.FC = () => {
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
+                      color="default"
+                      onClick={() => handleChange(supply)}
+                      disabled={deleteMutation.isPending}
+                    > 
+                      <BorderColor />
+                    </IconButton>
+                    <IconButton
                       color="error"
                       onClick={() => handleDelete(supply.id)}
                       disabled={deleteMutation.isPending}
                     >
+                      
                       <Delete />
                     </IconButton>
                   </TableCell>
@@ -126,19 +139,39 @@ const SupplyList: React.FC = () => {
         </Table>
       </TableContainer>
 
+      {/* Форма для добавления нового материала */}
       <Dialog
         open={openForm}
         onClose={() => setOpenForm(false)}
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Добавить новый материал</DialogTitle>
-        <DialogContent>
+        <DialogActions sx={{display: "flex", justifyContent: "space-between"}}>
+          <DialogTitle>Добавить новый материал</DialogTitle>
+          <Button color="secondary" onClick={() => setOpenForm(false)}><Close sx={{fontSize: 30}} /></Button>
+        </DialogActions>
+        <DialogContent >
           <SupplyForm onSuccess={() => setOpenForm(false)} />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenForm(false)}>Отмена</Button>
+        
+      </Dialog>
+      
+      {/* Форма для изменения материала */}
+      <Dialog
+        open={!!changedSupply}
+        onClose={() => setChangedSupply(null)}
+        maxWidth="md"
+        fullWidth
+      >
+        
+        <DialogActions  sx={{display: "flex", justifyContent: "space-between"}}>
+          <DialogTitle>Изменение материала</DialogTitle>
+          <Button color="secondary" onClick={() => setChangedSupply(null)}><Close sx={{fontSize: 30}} /></Button>
         </DialogActions>
+        <DialogContent >
+          <SupplyForm defaultValues={changedSupply} onSuccess={() => setChangedSupply(null)} />
+        </DialogContent>
+        
       </Dialog>
     </Box>
   );

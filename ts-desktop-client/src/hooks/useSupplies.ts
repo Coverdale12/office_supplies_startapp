@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { suppliesApi } from '../services/api';
-import { SupplyItem, CreateSupplyData } from '../types/types';
+import { CreateSupplyData } from '../types/types';
 import { useSnackbar } from '../context/SnackbarContext';
 
 export const useSupplies = () => {

@@ -7,15 +7,17 @@ import {
   Grid,
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
-import { CreateSupplyData } from '../types/types';
-import { useCreateSupply } from '../hooks/useSupplies';
+import { CreateSupplyData, SupplyItem } from '../types/types';
+import { useCreateSupply, useUpdateSupply } from '../hooks/useSupplies';
 
 interface SupplyFormProps {
   onSuccess: () => void;
+  defaultValues?: SupplyItem | null;
 }
 
-const SupplyForm: React.FC<SupplyFormProps> = ({ onSuccess }) => {
-  const { control, handleSubmit, formState: { errors } } = useForm<CreateSupplyData>({
+const SupplyForm: React.FC<SupplyFormProps> = ({ onSuccess, defaultValues }) => {
+  const { control, handleSubmit, formState: { errors } } = useForm<CreateSupplyData>(defaultValues ? 
+    {defaultValues: defaultValues} : {
     defaultValues: {
       name: '',
       type: '',
@@ -29,19 +31,30 @@ const SupplyForm: React.FC<SupplyFormProps> = ({ onSuccess }) => {
 
   const createMutation = useCreateSupply();
 
+  const updateMutation = useUpdateSupply();
+
   const onSubmit = (data: CreateSupplyData) => {
-    createMutation.mutate(data, {
+    if(!defaultValues){
+      createMutation.mutate(data, {
+        onSuccess: () => {
+          onSuccess();
+        }
+      });
+      return
+    }
+    updateMutation.mutate({ id: defaultValues.id, data }, {
       onSuccess: () => {
         onSuccess();
       }
-    });
+    })
+    
   };
 
   const unitTypes = ['шт', 'пачка', 'упаковка', 'литр', 'кг'];
   const supplyTypes = ['Картридж', 'Тонер', 'Бумага', 'Ролик', 'Другое'];
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 2 }}>
+    <Box component="form"  onSubmit={handleSubmit(onSubmit)} sx={{ mt: 2 }}>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
           <Controller
@@ -53,6 +66,7 @@ const SupplyForm: React.FC<SupplyFormProps> = ({ onSuccess }) => {
                 {...field}
                 label="Название"
                 fullWidth
+                color='secondary'
                 error={!!errors.name}
                 helperText={errors.name?.message}
               />
@@ -70,6 +84,7 @@ const SupplyForm: React.FC<SupplyFormProps> = ({ onSuccess }) => {
                 {...field}
                 select
                 label="Тип"
+                color='secondary'
                 fullWidth
                 error={!!errors.type}
                 helperText={errors.type?.message}
@@ -94,6 +109,7 @@ const SupplyForm: React.FC<SupplyFormProps> = ({ onSuccess }) => {
                 {...field}
                 label="Модель"
                 fullWidth
+                color='secondary'
                 error={!!errors.model}
                 helperText={errors.model?.message}
               />
@@ -112,6 +128,7 @@ const SupplyForm: React.FC<SupplyFormProps> = ({ onSuccess }) => {
                 select
                 label="Единица измерения"
                 fullWidth
+                color='secondary'
                 error={!!errors.unit}
                 helperText={errors.unit?.message}
               >
@@ -139,6 +156,7 @@ const SupplyForm: React.FC<SupplyFormProps> = ({ onSuccess }) => {
                 type="number"
                 label="Количество"
                 fullWidth
+                color='secondary'
                 error={!!errors.quantity}
                 helperText={errors.quantity?.message}
                 onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
@@ -158,6 +176,7 @@ const SupplyForm: React.FC<SupplyFormProps> = ({ onSuccess }) => {
             render={({ field }) => (
               <TextField
                 {...field}
+                color='secondary'
                 type="number"
                 label="Минимальный запас"
                 fullWidth
@@ -178,6 +197,7 @@ const SupplyForm: React.FC<SupplyFormProps> = ({ onSuccess }) => {
                 {...field}
                 label="Местоположение"
                 fullWidth
+                color='secondary'
                 error={!!errors.location}
                 helperText={errors.location?.message}
               />
@@ -187,13 +207,20 @@ const SupplyForm: React.FC<SupplyFormProps> = ({ onSuccess }) => {
       </Grid>
 
       <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-        <Button
+        
+        {!defaultValues ? <Button
           type="submit"
           variant="contained"
           disabled={createMutation.isPending}
         >
           {createMutation.isPending ? 'Создание...' : 'Создать'}
-        </Button>
+        </Button> : <Button
+          type="submit"
+          variant="contained"
+          disabled={createMutation.isPending}
+        >
+          {createMutation.isPending ? 'Изменение...' : 'Изменить'}
+        </Button>}
       </Box>
     </Box>
   );

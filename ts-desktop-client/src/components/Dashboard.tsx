@@ -9,7 +9,6 @@ import {
 import {
   Inventory,
   Warning,
-  PendingActions,
   TrendingUp,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
@@ -22,9 +21,9 @@ const StatCard: React.FC<{
   icon: React.ReactNode;
   color: string;
 }> = ({ title, value, icon, color }) => (
-  <Card>
+  <Card sx={{height: "100%"}}>
     <CardContent>
-      <Box display="flex" alignItems="center" justifyContent="space-between">
+      <Box display="flex" alignItems="center" justifyContent="space-between" >
         <Box>
           <Typography color="textSecondary" gutterBottom variant="h6">
             {title}
@@ -54,9 +53,8 @@ const Dashboard: React.FC = () => {
       <Typography variant="h4" component="h1" gutterBottom>
         Панель управления
       </Typography>
-      
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+      <Grid container spacing={3} sx={{ mb: 4, display: "flex" }}>
+        <Grid item xs={12} sm={6} md={4}>
           <StatCard
             title="Всего материалов"
             value={statistics?.total_supplies || 0}
@@ -64,7 +62,7 @@ const Dashboard: React.FC = () => {
             color="#1976d2"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <StatCard
             title="Низкий запас"
             value={statistics?.low_stock_count || 0}
@@ -72,15 +70,15 @@ const Dashboard: React.FC = () => {
             color="#ed6c02"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        {/* <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Ожидающие запросы"
             value={statistics?.pending_requests || 0}
             icon={<PendingActions sx={{ fontSize: 40 }} />}
             color="#2e7d32"
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        </Grid> */}
+        <Grid item xs={12} sm={6} md={4}>
           <StatCard
             title="Всего единиц"
             value={statistics?.total_items || 0}

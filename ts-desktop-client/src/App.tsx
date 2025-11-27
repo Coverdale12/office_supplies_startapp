@@ -1,11 +1,11 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { SnackbarProvider } from './context/SnackbarContext';
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
+import { ThemeProvider } from './context/ThemeContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,22 +16,22 @@ const queryClient = new QueryClient({
   },
 });
 
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-});
+// const theme = createTheme({
+//   palette: {
+//     mode: 'dark',
+//     primary: {
+//       main: '#670000',
+//     },
+//     secondary: {
+//       main: '#ff387e',
+//     },
+//   },
+// });
 
 const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider>
         <SnackbarProvider>
           <CssBaseline />
           <Router>
